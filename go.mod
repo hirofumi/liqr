@@ -7,7 +7,7 @@ require (
 	github.com/osteele/liquid v1.2.4
 	github.com/osteele/tuesday v1.0.3 // indirect
 	github.com/stretchr/testify v1.7.0 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (

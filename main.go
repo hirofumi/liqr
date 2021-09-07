@@ -14,6 +14,7 @@ import (
 	"github.com/osteele/liquid/parser"
 	"github.com/osteele/liquid/render"
 	"github.com/osteele/liquid/tags"
+	"gopkg.in/yaml.v2"
 )
 
 func main() {
@@ -54,6 +55,7 @@ func renderConfig() render.Config {
 	filters.AddStandardFilters(&cfg)
 	tags.AddStandardTags(cfg)
 	cfg.AddFilter("bash", bashFilter)
+	cfg.AddFilter("yaml", yamlFilter)
 	cfg.AddTag("prompt", promptTag)
 	cfg.AddTag("select", selectTag)
 
@@ -105,6 +107,16 @@ func bashFilter(input string, script func(string) string) (string, error) {
 	}
 
 	return string(output), nil
+}
+
+func yamlFilter(source string) (interface{}, error) {
+	var got interface{}
+
+	if err := yaml.Unmarshal([]byte(source), &got); err != nil {
+		return nil, fmt.Errorf("yaml: failed to unmarshal: %w", err)
+	}
+
+	return got, nil
 }
 
 func promptTag(source string) (func(io.Writer, render.Context) error, error) {

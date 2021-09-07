@@ -37,6 +37,13 @@ $ liqr <(echo '{{ "hello" | bash: "sed s/hello/hi/" }}')
 hi
 ```
 
+#### yaml
+
+```
+$ liqr <(echo '{% assign y = "answer: 42" | yaml %}{{ y.answer }}')
+42
+```
+
 ## References
 
 * https://github.com/manifoldco/promptui
