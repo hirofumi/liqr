@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/manifoldco/promptui"
-	"github.com/osteele/liquid/expressions"
 	"github.com/osteele/liquid/filters"
 	"github.com/osteele/liquid/parser"
 	"github.com/osteele/liquid/render"
@@ -59,7 +58,6 @@ func renderConfig() render.Config {
 	cfg.AddFilter("prompt", promptFilter)
 	cfg.AddFilter("select", selectFilter)
 	cfg.AddFilter("yaml", yamlFilter)
-	cfg.AddTag("select", selectTag)
 
 	return cfg
 }
@@ -162,46 +160,4 @@ func yamlFilter(source string) (interface{}, error) {
 	}
 
 	return got, nil
-}
-
-func selectTag(source string) (func(io.Writer, render.Context) error, error) {
-	ss := append(strings.SplitN(source, "=", 2), "", "")
-
-	stmt, err := expressions.ParseStatement(expressions.AssignStatementSelector, ss[0]+` = ""`)
-	if err != nil {
-		return nil, fmt.Errorf("select: failed to parse lhs: %w", err)
-	}
-	assignment := stmt.Assignment
-
-	stmt, err = expressions.ParseStatement(expressions.WhenStatementSelector, ss[1])
-	if err != nil {
-		return nil, fmt.Errorf("select: failed to parse rhs: %w", err)
-	}
-	when := stmt.When
-
-	return func(w io.Writer, ctx render.Context) error {
-		var err error
-
-		values := make([]interface{}, len(when.Exprs))
-		for i := range when.Exprs {
-			values[i], err = ctx.Evaluate(when.Exprs[i])
-			if err != nil {
-				return fmt.Errorf("select: failed to evaluate (%d): %w", i, err)
-			}
-		}
-
-		sel := promptui.Select{
-			Label: assignment.Variable,
-			Items: values,
-		}
-
-		i, _, err := sel.Run()
-		if err != nil {
-			return fmt.Errorf("select: failed to run: %w", err)
-		}
-
-		ctx.Set(assignment.Variable, values[i])
-
-		return nil
-	}, nil
 }

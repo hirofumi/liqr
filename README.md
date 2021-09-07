@@ -1,20 +1,8 @@
 # liqr
 
-[Liquid](https://shopify.github.io/liquid/) with Additional Tags and Filters
+[Liquid](https://shopify.github.io/liquid/) with Additional Filters
 
 ## Examples
-
-### Tags
-
-#### select
-
-```
-$ liqr <(echo '{%select env = "dev", "prod" %}{{ env }}')
-Use the arrow keys to navigate: ↓ ↑ → ←
-? env:
-  ▸ dev
-    prod
-```
 
 ### Filters
 
