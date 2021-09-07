@@ -57,6 +57,7 @@ func renderConfig() render.Config {
 	tags.AddStandardTags(cfg)
 	cfg.AddFilter("bash", bashFilter)
 	cfg.AddFilter("prompt", promptFilter)
+	cfg.AddFilter("select", selectFilter)
 	cfg.AddFilter("yaml", yamlFilter)
 	cfg.AddTag("prompt", promptTag)
 	cfg.AddTag("select", selectTag)
@@ -138,6 +139,20 @@ func promptFilter(pattern string, label string, initial func(string) string) (in
 	}
 
 	return value, nil
+}
+
+func selectFilter(values []interface{}, label string) (interface{}, error) {
+	sel := promptui.Select{
+		Label: label,
+		Items: values,
+	}
+
+	i, _, err := sel.Run()
+	if err != nil {
+		return nil, fmt.Errorf("select: failed to run: %w", err)
+	}
+
+	return values[i], nil
 }
 
 func yamlFilter(source string) (interface{}, error) {

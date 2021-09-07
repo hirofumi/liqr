@@ -49,6 +49,17 @@ $ liqr <(echo '{{ "[A-Z][A-Za-z]*" | prompt: "name", "John" }}')
 ✔ name: John█
 ```
 
+#### select
+
+```
+$ liqr <(echo '{{ "Alice,Bob,Carol" | split: "," | select: "name" }}')
+Use the arrow keys to navigate: ↓ ↑ → ←
+? name:
+  ▸ Alice
+    Bob
+    Carol
+```
+
 #### yaml
 
 ```
