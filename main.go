@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"regexp"
 	"strings"
 
 	"github.com/manifoldco/promptui"
@@ -55,6 +56,7 @@ func renderConfig() render.Config {
 	filters.AddStandardFilters(&cfg)
 	tags.AddStandardTags(cfg)
 	cfg.AddFilter("bash", bashFilter)
+	cfg.AddFilter("prompt", promptFilter)
 	cfg.AddFilter("yaml", yamlFilter)
 	cfg.AddTag("prompt", promptTag)
 	cfg.AddTag("select", selectTag)
@@ -107,6 +109,35 @@ func bashFilter(input string, script func(string) string) (string, error) {
 	}
 
 	return string(output), nil
+}
+
+func promptFilter(pattern string, label string, initial func(string) string) (interface{}, error) {
+	regex, err := regexp.Compile(pattern)
+	if err != nil {
+		return nil, fmt.Errorf("prompt: failed to compile pattern: %w", err)
+	}
+
+	validate := func(s string) error {
+		if !regex.MatchString(s) {
+			return fmt.Errorf("invalid value (required pattern: %s)", regex.String())
+		}
+
+		return nil
+	}
+
+	prompt := promptui.Prompt{
+		Label:     label,
+		Default:   initial(""),
+		AllowEdit: true,
+		Validate:  validate,
+	}
+
+	value, err := prompt.Run()
+	if err != nil {
+		return nil, fmt.Errorf("prompt: failed to run: %w", err)
+	}
+
+	return value, nil
 }
 
 func yamlFilter(source string) (interface{}, error) {

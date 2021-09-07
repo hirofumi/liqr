@@ -37,6 +37,18 @@ $ liqr <(echo '{{ "hello" | bash: "sed s/hello/hi/" }}')
 hi
 ```
 
+#### prompt
+
+```
+$ liqr <(echo '{{ "[A-Z][A-Za-z]*" | prompt: "name" }}')
+✗ name: █
+```
+
+```
+$ liqr <(echo '{{ "[A-Z][A-Za-z]*" | prompt: "name", "John" }}')
+✔ name: John█
+```
+
 #### yaml
 
 ```
