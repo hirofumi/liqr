@@ -59,7 +59,6 @@ func renderConfig() render.Config {
 	cfg.AddFilter("prompt", promptFilter)
 	cfg.AddFilter("select", selectFilter)
 	cfg.AddFilter("yaml", yamlFilter)
-	cfg.AddTag("prompt", promptTag)
 	cfg.AddTag("select", selectTag)
 
 	return cfg
@@ -163,37 +162,6 @@ func yamlFilter(source string) (interface{}, error) {
 	}
 
 	return got, nil
-}
-
-func promptTag(source string) (func(io.Writer, render.Context) error, error) {
-	stmt, err := expressions.ParseStatement(expressions.AssignStatementSelector, source)
-	if err != nil {
-		return nil, fmt.Errorf("prompt: failed to parse: %w", err)
-	}
-
-	return func(w io.Writer, ctx render.Context) error {
-		defaultValue, err := ctx.Evaluate(stmt.Assignment.ValueFn)
-		if err != nil {
-			return fmt.Errorf("prompt: failed to evaluate default value: %w", err)
-		}
-
-		value := fmt.Sprint(defaultValue)
-
-		prompt := promptui.Prompt{
-			Label:     stmt.Assignment.Variable,
-			Default:   value,
-			AllowEdit: true,
-		}
-
-		value, err = prompt.Run()
-		if err != nil {
-			return fmt.Errorf("prompt: failed to run: %w", err)
-		}
-
-		ctx.Set(stmt.Assignment.Variable, value)
-
-		return nil
-	}, nil
 }
 
 func selectTag(source string) (func(io.Writer, render.Context) error, error) {

@@ -6,13 +6,6 @@
 
 ### Tags
 
-#### prompt
-
-```
-$ liqr <(echo '{%prompt name = "John" %}{{ "Hello, " | append: name }}')
-✔ name: John
-```
-
 #### select
 
 ```
